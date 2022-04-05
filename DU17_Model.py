@@ -11,11 +11,15 @@ from threading import Thread
 import h5py
 import pandas as pd
 
-#values
-#m1,m2,c1,c2 = [1.35,1.35,0.174,0.174] # SLy(1.35,1.35) #163
-#m1,m2,c1,c2 = [1.3,1.4,0.142,0.153]
+#creates lightcurve dataframes from input data using the Dietrich Ujevic 2017 model codebase from the gwemlightcurves python package
+#to make with other models similair programmes to this one can be made using different parts of the gwemlightcurve package.
 
 def Generate_LightCurve(m1,m2,l1,l2,plot = False):
+    """A function to generate lightcurves based off of the two apparent masses of the neutron stars and their tidal deformabilities.
+            -m1,m2,l1,l2: Float inputs
+            -plot: boolean for whether or not to plot the generated lightcurves
+    """
+    #initial parameters for the lightcurve
     tini = 0
     tmax = 11
     dt = 0.01
@@ -43,12 +47,10 @@ def Generate_LightCurve(m1,m2,l1,l2,plot = False):
     #calculate angles
     th = du.calc_qej(m1,c1,m2,c2)
     ph = du.calc_phej(m1,c2,m2,c2)
-
+    
     t_d, lbol_d,mag_new = calc_lc(tini,tmax,dt,mej,vej,vmin,th,ph,kappa,eps,alp,eth,flgbct = False)
-
-    #print(mag_new[0])
+    #t_d is time in days. lbol_d is bolometric luminosity, mag_new is the magnitude which we are interested in
     if plot == True:
-
         u = mag_new[0]
         g = mag_new[1]
         r = mag_new[2]
@@ -81,11 +83,12 @@ def Generate_LightCurve(m1,m2,l1,l2,plot = False):
         plt.legend(prop={'size': 6})
         #plt.xscale("log")
         plt.show()
-    return([m1,m2,l1,l1],np.array([t_d,mag_new]))
+    return([m1,m2,l1,l1],np.array([t_d,mag_new]))#useful to return inputs
 
 
 
 def generate_data(data):
+    "function to generate multiple lightcurves based on a give dataset of inputs"
     output = []
     for i in np.arange(len(data)):
         line = data[i]
@@ -100,18 +103,21 @@ def generate_data(data):
 
 
 def thread_fn(m1,m2,l1,l2,fname,printing = False):
+    "function used for multithreading the process. Speeds up data creation significantly"
     final_data = []
     L = len(m1)
     for i in np.arange(L):
         if printing == True:
-            if "idlelib" not in sys.modules:
+            if "idlelib" not in sys.modules:#if running in a command or execution window
                 print(f'\r{100*i/L:.3f}% finished',end = '\r')
-            else:
+            else: #if just running from IDLE
                 if not i % 1000:
                     print(f'{i}/{L}\t{100*i/L:.2f}%')
 
-        for x in np.arange(1):
-            m1_ = m1[i] #+ random.uniform(0,0.01)*m1[i] #m1 > m2 => l1 < l2
+        for x in np.arange(1):#if adding noise you would have np.arange(n) for number of points created around the initial.
+            #When adding noise consideer: m1 > m2 => l1 < l2
+            #These comments were intiial attempts to add noise
+            m1_ = m1[i] #+ random.uniform(0,0.01)*m1[i] 
             m2_ = m2[i] #+ random.uniform(-0.01,0)*m2[i]
             l1_ = l1[i] #+ random.uniform(-0.01,0)*l1[i]
             l2_ = l2[i] #+ random.uniform(0,0.01)*l2[i]
@@ -133,8 +139,11 @@ def thread_fn(m1,m2,l1,l2,fname,printing = False):
 
     df.to_pickle(f"{fname}.pkl")
     print(f"{fname} done")
-
+    #returning from a thread is quite confusing so it's better to just save the individual files and recombine later
+    
 def thread_fn2(fname,i,printing = False):
+    "The second threading function which attempts to add noise. Was never used later in the process but in theory should work.
+    
     print(f'thread {i} starting')
     final_data = []
     data = np.array(pd.read_pickle(fname).values)
@@ -152,7 +161,7 @@ def thread_fn2(fname,i,printing = False):
         m1,m2,l1,l2,t_d,g,r,I,z = d
         for j in np.arange(5):
             m1_ = m1 + random.uniform(0,0.01)*m1 #m1 > m2 => l1 < l2
-            m2_ = m2 + random.uniform(-0.01,0)*m2
+            m2_ = m2 + random.uniform(-0.01,0)*m2 #add a random value between m2 and m2 - 1%*m2
             l1_ = l1 + random.uniform(-0.01,0)*l1
             l2_ = l2 + random.uniform(0,0.01)*l2
             new_d = np.array([m1_,m2_,l1_,l2_,t_d,g,r,I,z])
@@ -166,29 +175,14 @@ def thread_fn2(fname,i,printing = False):
     df.to_pickle(f"{fname}_noise.pkl")
     print(f'thread {i} finished')
     
-#testing Jordan's code
-if __name__ == "__main__":
-    
-    """#adding noise
-    N_threads = 16
-    threads = []
-    
-    for i in np.arange(N_threads):
-        printing = False
-        if i == 16: #16 so there is no progress %
-            printing = True
-        
-        fname = f"DU17_training/DU17_{i}.pkl"
-        x = Thread(target = thread_fn2, args = (fname,i,printing,))
-        threads.append(x)
-        x.start()
-    
-    for thread in threads:
-        thread.join()
-    print("All threads finished")"""
+
+if __name__ == "__main__":#if not being imported to another python file.
+    """NB: Data creation took a long time (at least 2 hours if not more if I remember correctly)
+            it might be possible to take this code and instead of multithreading create data
+            in sections."""
     
     #Making the first data
-    filedir = "mass_lambda/mass_lambda_distributions.h5"
+    filedir = "mass_lambda/mass_lambda_distributions.h5"#the file containing the input m1,m2,l1,l2
 
     d = h5py.File(filedir, 'r')
     data = np.array(d.get('labels'))
@@ -199,8 +193,9 @@ if __name__ == "__main__":
     l1 = np.exp(data[:,2])
     l2 = np.exp(data[:,3])
 
-    N_threads = 16
-    
+    N_threads = 16 #depends on processor being used. More threads the better.
+
+    #split the inputs into constituent parts for multithreading.
     part_m1 = np.split(m1, N_threads)
     part_m2 = np.split(m2, N_threads)
     part_l1 = np.split(l1, N_threads)
@@ -208,8 +203,10 @@ if __name__ == "__main__":
     threads = list()
     
     for i in np.arange(N_threads):
+        #launch all the threads
         printing = False
         if i == 0:
+            #only have printing = True for the first thread to act as an indication of how long the overal process has
             printing = True
         x = Thread(target = thread_fn, args = (part_m1[i],part_m2[i],part_l1[i],part_l2[i],
                                                          f'DU17_training/DU17_{i}',printing,))
@@ -220,7 +217,6 @@ if __name__ == "__main__":
         thread.join()
     print("All threads finished")
 
-    #print('m1\tm2\tl1\tl2')
     
 
     
