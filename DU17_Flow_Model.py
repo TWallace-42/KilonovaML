@@ -185,7 +185,7 @@ Samples2 = [[],
             [],
             []]
 i = 0
-"""for s in Samples:
+for s in Samples:
     print(i)
     for l in s:
         M = np.max(l)
@@ -197,7 +197,7 @@ i = 0
             Mins.append(m)
             Samples2[i].append(l)
     Samples2[i] = np.array(Samples2[i])
-    i += 1"""
+    i += 1
 
 #Samples2 = np.array(Samples2)
 #print(Samples2)      
