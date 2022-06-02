@@ -1,38 +1,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import os
-import time
-from matplotlib import cm
-
-from glasflow import RealNVP
-import torch
-from torch import optim
-
 import random
-from sklearn.datasets import make_blobs
-from sklearn.model_selection import train_test_split
-from sklearn.utils import shuffle
 
+#imported the model you want to use
 from DU17_Model import Generate_LightCurve
 
-cmap =cm.get_cmap('hsv')
-plt.style.use('seaborn-colorblind')
-training_data = os.listdir("DU17_Training")
-band = 'g'
 
-fname = "Data_Cache/Crop/DU17_g_cropped.pkl" 
+"""A programme to compare the data created by the model and the data you have after processing"""
+
+#setting up matplotlib
+plt.style.use('seaborn-colorblind')
+
+#setting up data
+band = 'g' #band you are comparing
+fname = "Data_Cache/combined_nannum.pkl" #location you want to check
 data = pd.read_pickle(fname)
-#data = shuffle(data)
 
 def check_data(band,data):
     bandindex = ['g','r','i','z'].index(band) + 1
     
-    
-    curve = data[band].values
+    curve = data[band].values #get lightcurves from loaded data
     curve = np.vstack(curve)
-    #curve = np.nan_to_num(curve)
-    
+
+    #get the conditions
     m1 = data['m1']
     m2 = data['m2']
     l1 = data['l1']
@@ -45,24 +36,19 @@ def check_data(band,data):
     m2 = np.vstack(data['m2'])
     l1 = np.vstack(data['l1'])
     l2 = np.vstack(data['l2'])
-
-    ind = random.randint(0,len(curve))
+    
+    ind = random.randint(0,len(curve))#index randomly chosen
     m1_i,m2_i,l1_i,l2_i = conditional[ind]
-    curve_i = curve[ind]
+    curve_i = curve[ind] #curve chosen from same index
 
+    #generate ligthcurves
     lc = Generate_LightCurve(m1_i,m2_i,l1_i,l2_i)[1]
     lc = np.nan_to_num(lc)
 
-    #lc2 = Generate_LightCurve(m1_i,m2_i,l1_i,l2_i)[1]
-    #lc2 = np.nan_to_num(lc2)
-
-    #lc3 = Generate_LightCurve(m1_i,m2_i,l1_i,l2_i)[1]
-    #lc3 = np.nan_to_num(lc3)
-
-    #lc4 = Generate_LightCurve(m1_i,m2_i,l1_i,l2_i)[1]
-    #lc4 = np.nan_to_num(lc4)
-
+    #plot lightcurves from generate lightcurve function
     plt.plot(lc[0],lc[1][bandindex],label = "Model",c = "red")
+
+    #plot loaded data
     plt.plot(t_d,curve_i,label = "training data")
     plt.gca().invert_yaxis()
     plt.legend()

@@ -10,7 +10,7 @@ from math import isnan
 
 
 f = 120 #Factor to reduce the data by
-fname = "Data_Cache/New/DU17_15.pkl"
+fname = "Data_Cache/combined.pkl"
 print(f'file: {fname}')
 
 data = pd.read_pickle(fname)

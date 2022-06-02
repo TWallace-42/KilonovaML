@@ -142,8 +142,8 @@ def thread_fn(m1,m2,l1,l2,fname,printing = False):
     #returning from a thread is quite confusing so it's better to just save the individual files and recombine later
     
 def thread_fn2(fname,i,printing = False):
-    "The second threading function which attempts to add noise. Was never used later in the process but in theory should work.
-    
+    "The second threading function which attempts to add noise. Was never used later in the process but in theory should work."
+
     print(f'thread {i} starting')
     final_data = []
     data = np.array(pd.read_pickle(fname).values)
@@ -193,13 +193,13 @@ if __name__ == "__main__":#if not being imported to another python file.
     l1 = np.exp(data[:,2])
     l2 = np.exp(data[:,3])
 
-    N_threads = 16 #depends on processor being used. More threads the better.
+    N_threads = 1 #depends on processor being used. More threads the better.
 
     #split the inputs into constituent parts for multithreading.
-    part_m1 = np.split(m1, N_threads)
-    part_m2 = np.split(m2, N_threads)
-    part_l1 = np.split(l1, N_threads)
-    part_l2 = np.split(l2, N_threads)
+    part_m1 = np.split(m1, 16*N_threads)
+    part_m2 = np.split(m2, 16*N_threads)
+    part_l1 = np.split(l1, 16*N_threads)
+    part_l2 = np.split(l2, 16*N_threads)
     threads = list()
     
     for i in np.arange(N_threads):
@@ -208,6 +208,7 @@ if __name__ == "__main__":#if not being imported to another python file.
         if i == 0:
             #only have printing = True for the first thread to act as an indication of how long the overal process has
             printing = True
+        i+= 3
         x = Thread(target = thread_fn, args = (part_m1[i],part_m2[i],part_l1[i],part_l2[i],
                                                          f'DU17_training/DU17_{i}',printing,))
         threads.append(x)

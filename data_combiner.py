@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import os
 
-fname = "Data_Cache/New/"
+#combines data files in the folder fname
+fname = "Data_Cache/"
 files = os.listdir(fname)
 print(files)
 

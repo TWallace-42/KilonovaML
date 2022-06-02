@@ -5,7 +5,6 @@ import os
 import time
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-#plt.style.use('seaborn-colorblind')
 
 import h5py
 import random
@@ -14,10 +13,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
 
-
+#   Compares the priors when the object is not assumed  #
+#               to when NS-NS is assumed                #
+#   Honestly not very important for most of this work   #
+#-------------------------------------------------------#
 
 f = h5py.File("GW170817_GWTC-1.hdf5",'r')
-
 
 with open('NS-priors.txt','r') as file:
     data2 = file.readlines()
