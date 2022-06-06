@@ -193,13 +193,13 @@ if __name__ == "__main__":#if not being imported to another python file.
     l1 = np.exp(data[:,2])
     l2 = np.exp(data[:,3])
 
-    N_threads = 1 #depends on processor being used. More threads the better.
+    N_threads = 16 #depends on processor being used. More threads the better. Can result in overheating though. 
 
     #split the inputs into constituent parts for multithreading.
-    part_m1 = np.split(m1, 16*N_threads)
-    part_m2 = np.split(m2, 16*N_threads)
-    part_l1 = np.split(l1, 16*N_threads)
-    part_l2 = np.split(l2, 16*N_threads)
+    part_m1 = np.split(m1, 1*N_threads) #change the multiple if you want larger splits, note that if >1 you will not create the full data
+    part_m2 = np.split(m2, 1*N_threads) #it can be useful to create each part seperatlety though (N_threads = 1, split = 16*N_threads) and set 
+    part_l1 = np.split(l1, 1*N_threads) # i+= n (see line 211) later for whatever segment n you wish to create. This takes longer but prevents
+    part_l2 = np.split(l2, 1*N_threads) # overheating for a long period of time
     threads = list()
     
     for i in np.arange(N_threads):
@@ -208,7 +208,7 @@ if __name__ == "__main__":#if not being imported to another python file.
         if i == 0:
             #only have printing = True for the first thread to act as an indication of how long the overal process has
             printing = True
-        i+= 3
+        #i+=3 #if N_threads = 1 but the split is greater than that then you can add this to build the data for that specific split
         x = Thread(target = thread_fn, args = (part_m1[i],part_m2[i],part_l1[i],part_l2[i],
                                                          f'DU17_training/DU17_{i}',printing,))
         threads.append(x)
