@@ -44,7 +44,7 @@ There are various programmes which use the created model. Model_user.py uses an 
 - Model_user_time.py uses the model specified in line 97, gets scaling constants from the training data file specified in 112 as well as getting values of m1,m2,l1,l2 to generate data traditionally and compare the time taken for both
 - DU17_Flow_Model.py uses the flow model of various different models specified in lines 34-37.
 
-
+## Notes
 
 Issues I had with this process that are worth looking out for:
 - Creating data took a long time, multithreading reduced time but led to overheating issues with my computer. I have modified the code slightly to only make one module at a time with the segment created being a manual process (to change set ``N_threads  = [[actual # of threads]]`` and remove the ``*16`` in the following lines.)
