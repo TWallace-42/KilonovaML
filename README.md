@@ -15,7 +15,7 @@ Alongside the programmes and data provided in this github page you will need to 
 - Data_Cache/
 - Model Evolution/
 - Models/
-- 
+
 An example of how the directory might look is shown below:
 
 ![alt text](https://github.com/2300431w/KilonovaML/blob/main/Folders.PNG)
