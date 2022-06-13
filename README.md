@@ -35,7 +35,7 @@ To remove `nan` values we use the data_unnaner.py function. This removes `nan` v
 
 ## 4) Training the AI
 The AI will train from data in the directory specified in lines 45 and 71 (Whatever file is in DU17_Training/ by default). The unprocessed data (Data_Cache/combined.pkl by default but it is important to change if you move this file) is used to find scaling constants of the lightcurves. 
-As the model trains it will output predicted graphs to "Model Evolution/" so that we can see the model evolve over time. When the model finishes it will save itself to "Models/". 
+As the model trains it will output predicted graphs to "Model Evolution/" so that we can see the model evolve over time. When the model finishes it will save itself to "Models/".  If storager space is a concern you can remove the storage of graphs in "Model Evolution/" by commenting out line 260
 
 ## 5) Using trained models
 There are various programmes which use the created model. Model_user.py uses an individual model for a specific band while DU17_flow_Model uses four different models for each of the bands and is the final step of the AI generation. 
