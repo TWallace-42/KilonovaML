@@ -5,7 +5,23 @@ The Basic process is described in the chart below. Data must be presented to the
 
 ![alt text](https://github.com/2300431w/KilonovaML/blob/main/Flow%20Chart.png)
 
+ #Instructions for running code
 
+## Setting up the environment
+
+Alongside the programmes and data provided in this github page you will need to create the following empty directories:
+
+- DU17_training/
+- Data_Cache/
+- Model Evolution/
+- Models/
+- 
+An example of how the directory might look is shown below:
+
+![alt text](https://github.com/2300431w/KilonovaML/blob/main/Flow%20Chart.png)
+
+## Creating Data
+Running
 Issues I had with this process that are worth looking out for:
 - Creating data took a long time, multithreading reduced time but led to overheating issues with my computer. I have modified the code slightly to only make one module at a time with the segment created being a manual process (to change set ``N_threads  = [[actual # of threads]]`` and remove the ``*16`` in the following lines.)
 - The Model failed on real world data. The leading theory as to why is that the training data I used has too specific a $\lambda_1$ = $\lambda_2$ so one solution might be to add noise. Though be careful, $m_1$ > $m_2$ and $\lambda_1$ < $\lambda_2$ . There is a rudimentary attempt at this in the comments of the DU17_Model.py file but I never got to test it. 
